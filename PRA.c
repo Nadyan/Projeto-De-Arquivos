@@ -55,18 +55,14 @@ int lerEntidade(int entidade);
 int atualizarEntidade(int entidade);
 void mostrarLivro(Livro livro);
 void salvarRegistro(int entidade,void *livro);
-
 void heapsort(int vetor[], int n);
-
 
 int main()
 {
-
    caminhoIndices[0] = "dados/indiceLivro.txt";
    caminhoIndices[1] = "dados/indiceLeitor.txt";
    caminhoIndices[2] = "dados/indiceAutor.txt";
    caminhoIndices[3] = "dados/indiceAutorLivro.txt";
-
 
    caminhoRegistros[0] = "Livro.txt";
    caminhoRegistros[1] = "dados/Leitor.txt";
@@ -260,7 +256,7 @@ int removerEntidade(int entidade){
 }
 
 int lerEntidade(int entidade){
-
+    printf("Informe o ID da entidade a ser lida: \n");
     return 0;
 }
 
@@ -270,7 +266,8 @@ int atualizarEntidade(int entidade){
      	AutorDoLivro autorLivro;
      	Autor autor;
     	switch(entidade){
-		//usuario informa o ID a ser atualizado e entao informa os novos atributos, com isso, salva o novo registro com o mesmo ID (??)		
+		//usuario informa o ID a ser atualizado e entao informa os novos atributos, 
+		//com isso salva o novo registro com o mesmo ID (???)		
 		case 1:
 		    printf("Informe o ID do livro a ser atualizado: \n");
 		    scanf("%d", &livro.id);
