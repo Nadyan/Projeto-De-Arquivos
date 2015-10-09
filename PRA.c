@@ -1,10 +1,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+<<<<<<< HEAD
 //CAMINHOS GLOBAIS
 const char *caminhoIndices[4];
 const char *caminhoRegistros[4];
 
+=======
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
 typedef struct {
 	int id;
 	char titulo[30];
@@ -32,6 +35,7 @@ typedef struct {
 	int autorID;
 	int livroID;
 	int sequencia;
+<<<<<<< HEAD
 } AutorDoLivro;
 
 typedef struct indice{
@@ -45,6 +49,9 @@ typedef struct indiceAutorLivro{
     int livro;
     int sequence;
 }IndiceAutorLivro;
+=======
+} AutoDoLivro;
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
 
 //DECLARAÇÃO DAS FUNÇÕES
 int menuEntidade();
@@ -53,6 +60,7 @@ int adicionarEntidade(int entidade);
 int removerEntidade(int entidade);
 int lerEntidade(int entidade);
 int atualizarEntidade(int entidade);
+<<<<<<< HEAD
 void mostrarLivro(Livro livro);
 void salvarRegistro(int entidade,void *livro);
 
@@ -72,6 +80,11 @@ int main()
    caminhoRegistros[1] = "dados/Leitor.txt";
    caminhoRegistros[2] = "dados/Autor.txt";
    caminhoRegistros[3] = "dados/AutorLivro.txt";
+=======
+
+int main()
+{
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
    int escolha;
    do{
     escolha = menuEntidade();
@@ -111,51 +124,72 @@ void menuOperacao(int entidade){
             case 1:
                 if(adicionarEntidade(entidade)==0){
                     printf("operacao realizada com sucesso!\n");
+<<<<<<< HEAD
                     system("PAUSE");
                     system("cls");
                 }else{
                     printf("operacao falhou!\n");
                     system("PAUSE");
                     system("cls");
+=======
+                }else{
+                    printf("operacao falhou!\n");
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
                 }
                 break;
             case 2:
                 if(atualizarEntidade(entidade)==0){
                     printf("operacao realizada com sucesso!\n");
+<<<<<<< HEAD
                     system("PAUSE");
                     system("cls");
                 }else{
                     printf("operacao falhou!\n");
                     system("PAUSE");
                     system("cls");
+=======
+                }else{
+                    printf("operacao falhou!\n");
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
                 }
                 break;
             case 3:
                 if(lerEntidade(entidade)==0){
                     printf("operacao realizada com sucesso!\n");
+<<<<<<< HEAD
                     system("PAUSE");
                     system("cls");
                 }else{
                     printf("operacao falhou!\n");
                     system("PAUSE");
                     system("cls");
+=======
+                }else{
+                    printf("operacao falhou!\n");
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
                 }
                 break;
             case 4:
                 if(removerEntidade(entidade)==0){
                     printf("operacao realizada com sucesso!\n");
+<<<<<<< HEAD
                     system("PAUSE");
                     system("cls");
                 }else{
                     printf("operacao falhou!\n");
                     system("PAUSE");
                     system("cls");
+=======
+                }else{
+                    printf("operacao falhou!\n");
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
                 }
                 break;
         }
     }while(operacao != 0);
 }
 
+<<<<<<< HEAD
 
 void mostrarLivro(Livro livro){
     printf("titulo:%s\n",livro.titulo);
@@ -224,10 +258,14 @@ int adicionarEntidade(int entidade){
             scanf("%d",&autorLivro.sequencia);
             break;
     }
+=======
+int adicionarEntidade(int entidade){
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
 
     return 0;
 }
 
+<<<<<<< HEAD
 int testeHexa(char hex[10]){
     int i = 0;
     strcmp("0xDEADC0DE",hex);
@@ -252,6 +290,8 @@ void salvarRegistro(int entidade,void *registro){
     }
 }
 
+=======
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
 int removerEntidade(int entidade){
 
     return 0;
@@ -267,6 +307,7 @@ int atualizarEntidade(int entidade){
     return 0;
 }
 
+<<<<<<< HEAD
 void heapsort(int vetor[], int n){
 	int pivot;
 	int x, y, aux;
@@ -334,4 +375,6 @@ void heapsort(int vetor[], int n){
 
 
 
+=======
+>>>>>>> e6e5a1d4ffd73b273de24f3a33eeb028d0fb16eb
 
