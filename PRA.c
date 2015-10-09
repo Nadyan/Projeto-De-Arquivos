@@ -229,9 +229,12 @@ int adicionarEntidade(int entidade){
 }
 
 int testeHexa(char hex[10]){
-    int i = 0;
-    strcmp("0xDEADC0DE",hex);
-    str
+    if(strcmp("0xDEADC0DE",hex) == 0) //se srtcmp retornar 0, as strings sao iguais
+    {
+        return 1; //HEXADECIMAL CORRETO
+    }else{
+        return 0; //HEXADECIMAL ERRADO
+    }
 }
 
 void salvarRegistro(int entidade,void *registro){
@@ -247,7 +250,7 @@ void salvarRegistro(int entidade,void *registro){
     mostrarLivro(*livro);
     printf("%s\n",hex);
     fclose(f);
-    if(testeHexa(hex) == 0){
+    if(testeHexa(hex) == 1){
 
     }
 }
@@ -303,5 +306,35 @@ void heapsort(int vetor[], int n){
 		vetor[x]=aux;
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
