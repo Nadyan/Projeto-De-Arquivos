@@ -20,19 +20,19 @@ typedef struct {
 	int endereco;
 	int cidade;
 	int estado;
-} Leitor;
+}Leitor;
 
 typedef struct {
 	int id;
 	char nome[30];
 	char sobrenome[30];
-} Autor;
+}Autor;
 
 typedef struct {
 	int autorID;
 	int livroID;
 	int sequencia;
-} AutorDoLivro;
+}AutorDoLivro;
 
 typedef struct indice{
     int posicao;
@@ -224,7 +224,6 @@ int adicionarEntidade(int entidade){
             scanf("%d",&autorLivro.sequencia);
             break;
     }
-
     return 0;
 }
 
@@ -266,8 +265,79 @@ int lerEntidade(int entidade){
 }
 
 int atualizarEntidade(int entidade){
+	Livro livro;
+     	Leitor leitor;
+     	AutorDoLivro autorLivro;
+     	Autor autor;
+    	switch(entidade){
+		//usuario informa o ID a ser atualizado e entao informa os novos atributos, com isso, salva o novo registro com o mesmo ID (??)		
+		case 1:
+		    printf("Informe o ID do livro a ser atualizado: \n");
+		    scanf("%d", &livro.id);
+		    
+		    printf("digite o novo titulo do livro:\n");
+		    fflush(stdin);
+		    gets(livro.titulo);
+		    printf("digite o novo ano do livro:\n");
+		    scanf("%d",&livro.anoPublicacao);
+		    printf("digite a nova editora do livro:\n");
+		    fflush(stdin);
+		    gets(livro.editora);
+		    printf("digite o novo isbn do livro:\n");
+		    fflush(stdin);
+		    gets(livro.isbn);
+		    
+		    salvarRegistro(entidade,&livro);
+		    break;
 
-    return 0;
+		case 2:
+		    printf("Informe o ID do leitor a ser atualizado: \n");
+		    scanf("%d",&leitor.id);
+		    
+		    printf("digite o novo nome do leitor:\n");
+		    fflush(stdin);
+		    gets(leitor.nome);
+		    printf("digite o novo telefone do leitor:\n");
+		    fflush(stdin);
+		    gets(leitor.fone);
+		    printf("digite o novo endereco do leitor:\n");
+		    scanf("%d",&leitor.endereco);
+		    printf("digite a nova cidade do leitor:\n");
+		    scanf("%d",leitor.cidade);
+		    printf("digite o novo estado do leitor:\n");
+		    scanf("%d",leitor.estado);
+		    
+  		    salvarRegistro(entidade,&leitor); //??
+		    break;
+
+		case 3:
+		    printf("Informe o ID do autor a ser atualizado:\n");
+		    scanf("%d",&autor.id);
+
+		    printf("digite o novo nome do autor:\n");
+		    fflush(stdin);
+		    gets(autor.nome);
+		    printf("digite o novo sobrenome do autor:\n");
+		    fflush(stdin);
+		    gets(autor.sobrenome);
+		    
+		    salvarRegistro(entidade,&autor); //??
+		    break;
+
+		case 4:
+		    printf("Informe o ID do autor do livro a ser atualizado:\n");
+		    scanf("%d",&autorLivro.autorID);
+
+		    printf("digite o novo id do livro:\n");
+		    fflush(stdin);
+		    gets(autorLivro.livroID);
+		    printf("digite a nova sequencia do autor do livro:\n");
+		    scanf("%d",&autorLivro.sequencia);
+		    
+		    salvarRegistro(entidade,&autorLivro); //??
+		    break;
+	    }
+	    return 0;
 }
 
 void heapsort(int vetor[], int n){
@@ -281,11 +351,11 @@ void heapsort(int vetor[], int n){
 			pivot--;
 			aux = vetor[pivot];
 		}else{
-            n--;
-            if(n==0)
-                return;
-            aux = vetor[n];
-            vetor[n]=vetor[0];
+		    n--;
+		    if(n==0)
+		        return;
+		    aux = vetor[n];
+		    vetor[n]=vetor[0];
 		}
 		x = pivot;
 		y = pivot*2+1;
@@ -294,7 +364,6 @@ void heapsort(int vetor[], int n){
 			if((y+1 < n)&&(vetor[y+1]>vetor[y])){
 				y++;
 			}
-
 			if(vetor[y]>aux){
 				vetor[x]=vetor[y];
 				x=y;
