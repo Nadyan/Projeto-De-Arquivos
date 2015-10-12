@@ -64,7 +64,7 @@ int main()
    caminhoIndices[2] = "dados/indiceAutor.txt";
    caminhoIndices[3] = "dados/indiceAutorLivro.txt";
 
-   caminhoRegistros[0] = "Livro.txt";
+   caminhoRegistros[0] = "dados/Livro.txt";
    caminhoRegistros[1] = "dados/Leitor.txt";
    caminhoRegistros[2] = "dados/Autor.txt";
    caminhoRegistros[3] = "dados/AutorLivro.txt";
@@ -194,9 +194,9 @@ int adicionarEntidade(int entidade){
             printf("digite o endereco do leitor:\n");
             scanf("%d",&leitor.endereco);
             printf("digite a cidade do leitor:\n");
-            scanf("%d",leitor.cidade);
+            scanf("%d",&leitor.cidade);
             printf("digite o estado do leitor:\n");
-            scanf("%d",leitor.estado);
+            scanf("%d",&leitor.estado);
             break;
 
         case 3:
@@ -235,7 +235,7 @@ int testeHexa(char hex[10]){
 void salvarRegistro(int entidade,void *registro){
     char *caminho = caminhoRegistros[entidade-1];
     Livro *livro = (Livro*) registro;
-    FILE *f = fopen("Livro.txt","r");
+    FILE *f = fopen(caminho,"r");
     if(f == NULL){
         printf("erro ao abrir arquivo!\n");
         return;
@@ -246,6 +246,8 @@ void salvarRegistro(int entidade,void *registro){
     printf("%s\n",hex);
     fclose(f);
     if(testeHexa(hex) == 1){
+        FILE *f = fopen(caminho,"a");
+        //TODO tetar gravar como tipo byte o tamanhço da estrutura
 
     }
 }
@@ -266,12 +268,12 @@ int atualizarEntidade(int entidade){
      	AutorDoLivro autorLivro;
      	Autor autor;
     	switch(entidade){
-		//usuario informa o ID a ser atualizado e entao informa os novos atributos, 
-		//com isso salva o novo registro com o mesmo ID (???)		
+		//usuario informa o ID a ser atualizado e entao informa os novos atributos,
+		//com isso salva o novo registro com o mesmo ID (???)
 		case 1:
 		    printf("Informe o ID do livro a ser atualizado: \n");
 		    scanf("%d", &livro.id);
-		    
+
 		    printf("digite o novo titulo do livro:\n");
 		    fflush(stdin);
 		    gets(livro.titulo);
@@ -283,14 +285,14 @@ int atualizarEntidade(int entidade){
 		    printf("digite o novo isbn do livro:\n");
 		    fflush(stdin);
 		    gets(livro.isbn);
-		    
+
 		    salvarRegistro(entidade,&livro);
 		    break;
 
 		case 2:
 		    printf("Informe o ID do leitor a ser atualizado: \n");
 		    scanf("%d",&leitor.id);
-		    
+
 		    printf("digite o novo nome do leitor:\n");
 		    fflush(stdin);
 		    gets(leitor.nome);
@@ -303,7 +305,7 @@ int atualizarEntidade(int entidade){
 		    scanf("%d",leitor.cidade);
 		    printf("digite o novo estado do leitor:\n");
 		    scanf("%d",leitor.estado);
-		    
+
   		    salvarRegistro(entidade,&leitor); //??
 		    break;
 
@@ -317,7 +319,7 @@ int atualizarEntidade(int entidade){
 		    printf("digite o novo sobrenome do autor:\n");
 		    fflush(stdin);
 		    gets(autor.sobrenome);
-		    
+
 		    salvarRegistro(entidade,&autor); //??
 		    break;
 
@@ -330,7 +332,7 @@ int atualizarEntidade(int entidade){
 		    gets(autorLivro.livroID);
 		    printf("digite a nova sequencia do autor do livro:\n");
 		    scanf("%d",&autorLivro.sequencia);
-		    
+
 		    salvarRegistro(entidade,&autorLivro); //??
 		    break;
 	    }
