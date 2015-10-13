@@ -80,7 +80,7 @@ int menuEntidade();
 void menuOperacao(int entidade);
 int adicionarEntidade(int entidade);
 int removerEntidade(int entidade);
-int lerEntidade(int entidade);
+int lerEntidade(int entidade,int id);
 int atualizarEntidade(int entidade);
 void mostrarLivro(Livro *livro);
 void mostrarAutor(Autor *autor);
@@ -151,7 +151,7 @@ int menuEntidade(){
 }
 
 void menuOperacao(int entidade){
-    int operacao;
+    int operacao,id;
     do{
         printf("escolha a operacao desejada:\n");
         printf("1-Adicionar\n");
@@ -185,7 +185,9 @@ void menuOperacao(int entidade){
                 }
                 break;
             case 3:
-                if(lerEntidade(entidade)==0){
+                printf("Informe o ID da entidade a ser lida ou 0 para mostrar todas:  \n");
+                scanf("%d",&id);
+                if(lerEntidade(entidade,id)==0){
                     printf("operacao realizada com sucesso!\n");
                     system("PAUSE");
                     system("cls");
@@ -426,44 +428,23 @@ int removerEntidade(int entidade){
     return 0;
 }
 
-int lerEntidade(int entidade){
-    int id;
-    printf("Informe o ID da entidade a ser lida ou 0 para mostrar todas:  \n");
-    scanf("%d",&id);
+int lerEntidade(int entidade,int id){
     if(id==0){
-        char *caminho = caminhoRegistros[entidade-1];
-        FILE *f = fopen(caminho,"rb");
-        if(f == NULL){
-            printf("erro ao abrir arquivo!\n");
-            return;
-        }
-        char hex[11];
-        fgets(hex,11,f);
-        if(testeHexa(hex) == 1){
-            fseek(f,23,SEEK_SET);
-            char headerSize[4];
-            fgets(headerSize,4,f);
-            int headerSizeInt=atoi(headerSize);
-            char header[headerSizeInt];
-            fgets(header,headerSizeInt,f);
-            int tamanhoStruct = tamanhoStructHeader(header);
-            long tam;
+            char *caminho = caminhoIndices[entidade-1];
+            FILE *f = fopen(caminho,"rb");
+            int tam,i;
             fseek (f,0,SEEK_END);
-            tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
-            fseek (f,headerSizeInt,SEEK_SET);
-            void *registros =malloc(tamanhoStruct*tam);
-            int i;
-            for(i=0;i<tam;i++){
-                    fread(registros,tamanhoStruct,1,f);
-                     mostrarEntidade(entidade,registros,1);
-            }
-
-            for(i=0;i<tam;i++){
-
+            tam=(int)(ftell(f)/sizeof(Indice));
+            Indice indices[tam];
+            rewind(f);
+            if(tam>0){
+               fread(indices,sizeof(Indice),tam,f);
             }
             fclose(f);
-        }
-
+            int j=0;
+            for(i=0;i<tam;i++){
+                lerEntidade(entidade,indices[i].id);
+            }
     }else{
             int posicao = buscaID(entidade,id);
             char *caminho = caminhoRegistros[entidade-1];
