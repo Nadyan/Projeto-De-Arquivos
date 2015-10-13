@@ -70,7 +70,7 @@ void mostrarLeitor(Leitor *leitor){
     printf("estado:%d\n",leitor->estado);
 }
 
-void mostrarAutodoLivro(AutorDoLivro *autorLivro){
+void mostrarAutorDoLivro(AutorDoLivro *autorLivro){
     printf("idAutor:%d\n",autorLivro->autorID);
     printf("idLivro:%d\n",autorLivro->livroID);
     printf("seq:%d\n",autorLivro->sequencia);
@@ -85,7 +85,7 @@ int atualizarEntidade(int entidade);
 void mostrarLivro(Livro *livro);
 void mostrarAutor(Autor *autor);
 void mostrarLeitor(Leitor *leitor);
-void mostrarAutodoLivro(AutorDoLivro *autorLivro);
+void mostrarAutorDoLivro(AutorDoLivro *autorLivro);
 void salvarRegistro(int entidade,void *livro);
 void heapsort(Indice vetor[], int n);
 void inicializaArquivos();
@@ -503,7 +503,7 @@ void mostrarEntidade(int entidade,void *registros,int tam){
             mostrarAutor(registros);
             break;
         case 4:
-            mostrarAutodoLivro(registros);
+            mostrarAutorDoLivro(registros);
             break;
     }
 }
