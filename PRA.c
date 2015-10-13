@@ -452,10 +452,15 @@ int lerEntidade(int entidade){
             tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
             fseek (f,headerSizeInt,SEEK_SET);
             void **registros = (void**)malloc(tamanhoStruct*tam);
-            fread(registros,tamanhoStruct,tam,f);
             int i;
-            Livro *livro = (Livro*)&registros[1];
-            mostrarLivro(registros[1]);
+            for(i=0;i<tam;i++){
+                    fread(registros[i],tamanhoStruct,1,f);
+            }
+
+            for(i=0;i<tam;i++){
+                    mostrarEntidade(entidade,registros[i],1);
+            }
+            fclose(f);
         }
 
     }else{
@@ -484,6 +489,7 @@ int lerEntidade(int entidade){
                 void *registros = malloc(tamanhoStruct);
                 fread(registros,tamanhoStruct,1,f);
                 mostrarEntidade(entidade,registros,1);
+                fclose(f);
         }
     }
 
