@@ -75,11 +75,11 @@ void mostrarAutorDoLivro(AutorDoLivro *autorLivro){
     printf("idLivro:%d\n",autorLivro->livroID);
     printf("seq:%d\n",autorLivro->sequencia);
 }
-//DECLARAÇÃO DAS FUNÇÕES
+//DECLARAÃ‡ÃƒO DAS FUNÃ‡Ã•ES
 int menuEntidade();
 void menuOperacao(int entidade);
 int adicionarEntidade(int entidade);
-int removerEntidade(int entidade);
+int removerEntidade(int entidade,int id);
 int lerEntidade(int entidade,int id);
 int atualizarEntidade(int entidade);
 void mostrarLivro(Livro *livro);
@@ -185,7 +185,7 @@ void menuOperacao(int entidade){
                 }
                 break;
             case 3:
-                printf("Informe o ID da entidade a ser lida ou 0 para mostrar todas:  \n");
+                printf("Informe o ID da entidade a ser lida ou 0 para listar todas:  \n");
                 scanf("%d",&id);
                 if(lerEntidade(entidade,id)==0){
                     printf("operacao realizada com sucesso!\n");
@@ -198,7 +198,9 @@ void menuOperacao(int entidade){
                 }
                 break;
             case 4:
-                if(removerEntidade(entidade)==0){
+                printf("Informe o ID da entidade a ser removida:  \n");
+                scanf("%d",&id);
+                if(removerEntidade(entidade,id)==0){
                     printf("operacao realizada com sucesso!\n");
                     system("PAUSE");
                     system("cls");
@@ -423,21 +425,28 @@ int idUnico(int entidade,int id){
     return 1;
 }
 
-int removerEntidade(int entidade){
-    switch(entidade){	
-	case 1:
-		printf("Informe o ID do livro a ser removido: \n");
-		//...
-	case 2:
-		printf("Informe o ID do leitor a ser removido: \n");
-		//...
-	case 3:
-		printf("Informe o ID do autor a ser removido: \n");
-		//...
-	case 4:
-		printf("Informe o ID do autor do livro a ser removido: \n");
-		//...
+int removerEntidade(int entidade,int id){
+    char *caminho = caminhoIndices[entidade-1];
+    FILE *f = fopen(caminho,"rb");
+    int tam,i;
+    fseek (f,0,SEEK_END);
+	tam=(int)(ftell(f)/sizeof(Indice));
+	Indice indices[tam];
+	rewind(f);
+	if(tam>0){
+       fread(indices,sizeof(Indice),tam,f);
+    }
+    fclose(f);
+    for(i=0;i<tam;i++){
+        if(indices[i].id == id){
+            indices[i].id=-1;
+        }
+    }
 
+    heapsort(indices,tam);
+    FILE *fw = fopen(caminho,"wb");
+    fwrite(indices,sizeof(Indice),tam,fw);
+    fclose(fw);
     return 0;
 }
 
@@ -454,9 +463,10 @@ int lerEntidade(int entidade,int id){
                fread(indices,sizeof(Indice),tam,f);
             }
             fclose(f);
-            int j=0;
             for(i=0;i<tam;i++){
-                lerEntidade(entidade,indices[i].id);
+                if(indices[i].id > 0){
+                    lerEntidade(entidade,indices[i].id);
+                }
             }
     }else{
             int posicao = buscaID(entidade,id);
@@ -492,7 +502,7 @@ int lerEntidade(int entidade,int id){
 }
 
 void mostrarEntidade(int entidade,void *registros,int tam){
-    //TODO TROCAR SWITCH POR VETOR GLOBAL DE FUNÇÕES(DESCOBRIR COMO)
+    //TODO TROCAR SWITCH POR VETOR GLOBAL DE FUNÃ‡Ã•ES(DESCOBRIR COMO)
     switch(entidade){
         case 1:
             mostrarLivro(registros);
@@ -530,13 +540,13 @@ int buscaID(int entidade,int id){
 }
 
 int atualizarEntidade(int entidade){
-	Livro livro;
+        Livro livro;
      	Leitor leitor;
      	AutorDoLivro autorLivro;
      	Autor autor;
     	switch(entidade){
 		//usuario informa o ID a ser atualizado e entao informa os novos atributos,
-		//o antigo registro é apagado e um novo é criado
+		//o antigo registro Ã© apagado e um novo Ã© criado
 		case 1:
 		    printf("Informe o ID do livro a ser atualizado: \n");
 		    scanf("%d", &livro.id);
@@ -552,7 +562,7 @@ int atualizarEntidade(int entidade){
 		    printf("digite o novo isbn do livro:\n");
 		    fflush(stdin);
 		    gets(livro.isbn);
-
+            removerEntidade(entidade,livro.id);
 		    salvarRegistro(entidade,&livro);
 		    break;
 
@@ -572,7 +582,7 @@ int atualizarEntidade(int entidade){
 		    scanf("%d",leitor.cidade);
 		    printf("digite o novo estado do leitor:\n");
 		    scanf("%d",leitor.estado);
-
+            removerEntidade(entidade,leitor.id);
   		    salvarRegistro(entidade,&leitor); //??
 		    break;
 
@@ -586,7 +596,7 @@ int atualizarEntidade(int entidade){
 		    printf("digite o novo sobrenome do autor:\n");
 		    fflush(stdin);
 		    gets(autor.sobrenome);
-
+            removerEntidade(entidade,autor.id);
 		    salvarRegistro(entidade,&autor); //??
 		    break;
 
@@ -595,11 +605,10 @@ int atualizarEntidade(int entidade){
 		    scanf("%d",&autorLivro.autorID);
 
 		    printf("digite o novo id do livro:\n");
-		    fflush(stdin);
-		    gets(autorLivro.livroID);
+		    scanf("%d",&autorLivro.livroID);
 		    printf("digite a nova sequencia do autor do livro:\n");
 		    scanf("%d",&autorLivro.sequencia);
-
+            removerEntidade(entidade,autorLivro.autorID);
 		    salvarRegistro(entidade,&autorLivro); //??
 		    break;
 	    }
