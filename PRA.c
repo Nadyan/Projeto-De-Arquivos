@@ -424,6 +424,19 @@ int idUnico(int entidade,int id){
 }
 
 int removerEntidade(int entidade){
+    switch(entidade){	
+	case 1:
+		printf("Informe o ID do livro a ser removido: \n");
+		//...
+	case 2:
+		printf("Informe o ID do leitor a ser removido: \n");
+		//...
+	case 3:
+		printf("Informe o ID do autor a ser removido: \n");
+		//...
+	case 4:
+		printf("Informe o ID do autor do livro a ser removido: \n");
+		//...
 
     return 0;
 }
