@@ -46,6 +46,35 @@ typedef struct indiceAutorLivro{
     int sequence;
 }IndiceAutorLivro;
 
+
+
+void mostrarLivro(Livro *livro){
+    printf("id%d\n",livro->id);
+    printf("titulo:%s\n",livro->titulo);
+    printf("ano:%d\n",livro->anoPublicacao);
+    printf("editora:%s\n",livro->editora);
+}
+
+void mostrarAutor(Autor *autor){
+    printf("id:%d\n",autor->id);
+    printf("nome:%s\n",autor->nome);
+    printf("sobrenome:%s\n",autor->sobrenome);
+}
+
+void mostrarLeitor(Leitor *leitor){
+    printf("id:%d\n",leitor->id);
+    printf("nome:%s\n",leitor->nome);
+    printf("fone:%s\n",leitor->fone);
+    printf("endereco:%d\n",leitor->endereco);
+    printf("cidade:%d\n",leitor->cidade);
+    printf("estado:%d\n",leitor->estado);
+}
+
+void mostrarAutodoLivro(AutorDoLivro *autorLivro){
+    printf("idAutor:%d\n",autorLivro->autorID);
+    printf("idLivro:%d\n",autorLivro->livroID);
+    printf("seq:%d\n",autorLivro->sequencia);
+}
 //DECLARAÇÃO DAS FUNÇÕES
 int menuEntidade();
 void menuOperacao(int entidade);
@@ -53,13 +82,19 @@ int adicionarEntidade(int entidade);
 int removerEntidade(int entidade);
 int lerEntidade(int entidade);
 int atualizarEntidade(int entidade);
-void mostrarLivro(Livro livro);
+void mostrarLivro(Livro *livro);
+void mostrarAutor(Autor *autor);
+void mostrarLeitor(Leitor *leitor);
+void mostrarAutodoLivro(AutorDoLivro *autorLivro);
 void salvarRegistro(int entidade,void *livro);
 void heapsort(Indice vetor[], int n);
 void inicializaArquivos();
 int verificaArquivos(int quantidadeDesejada);
 int tamanhoStructHeader(char *header);
+int tamanhoChaveHeader(char *header);
 void atualizaIndice(int entidade,int posicao,int id);
+int idUnico(int entidade,int id);
+int buscaID(int identidade,int id);
 
 int main()
 {
@@ -74,10 +109,10 @@ int main()
    caminhoRegistros[3] = "dados/AutorLivro.txt";
    int escolha;
    if(verificaArquivos(4) != 4){
-       inicializaArquivos(1,"0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20], tipo=[int,varchar,varchar,int,varchar]*");
-       inicializaArquivos(2,"0xDEADC0DE,header_size=164,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4], tipo=[int,varchar,varchar,int,int,int]*");
-       inicializaArquivos(3,"0xDEADC0DE,header_size=164,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30], tipo=[int,varchar,varchar]*");
-       inicializaArquivos(4,"0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[6,30,30,11,20], tipo=[int,varchar,varchar,int,varchar]*");
+       inicializaArquivos(1,"0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20], tipo=[int,varchar,varchar,int,varchar], chaves:1*");
+       inicializaArquivos(2,"0xDEADC0DE,header_size=164,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4], tipo=[int,varchar,varchar,int,int,int],chaves:1*");
+       inicializaArquivos(3,"0xDEADC0DE,header_size=164,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30], tipo=[int,varchar,varchar],chaves:1*");
+       inicializaArquivos(4,"0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[6,30,30,11,20], tipo=[int,varchar,varchar,int,varchar],chaves:2*");
    }
    do{
     escolha = menuEntidade();
@@ -174,13 +209,6 @@ void menuOperacao(int entidade){
     }while(operacao != 0);
 }
 
-
-void mostrarLivro(Livro livro){
-    printf("titulo:%s\n",livro.titulo);
-    printf("ano:%d\n",livro.anoPublicacao);
-    printf("editora:%s\n",livro.editora);
-}
-
 int adicionarEntidade(int entidade){
      Livro livro;
      Leitor leitor;
@@ -273,7 +301,6 @@ int testeHexa(char hex[10]){
 }
 
 int tamanhoStructHeader(char *header){
-
     header = strstr(header,"tamanho");
     header = strstr(header,"[");
     char temp[4] = "";
@@ -291,6 +318,14 @@ int tamanhoStructHeader(char *header){
     return tamanho;
 }
 
+int tamanhoChaveHeader(char *header){
+    header = strstr(header,"chaves");
+    header = strstr(header,"=");
+    char *temp;
+    sprintf(temp,"%c",header[1]);
+    return atoi(temp);
+}
+
 void salvarRegistro(int entidade,void *registro){
     char *caminho = caminhoRegistros[entidade-1];
     FILE *f = fopen(caminho,"rb");
@@ -298,31 +333,37 @@ void salvarRegistro(int entidade,void *registro){
         printf("erro ao abrir arquivo!\n");
         return;
     }
+    int *id;
+
     char hex[11];
     fgets(hex,11,f);
-    fseek(f,23,SEEK_SET);
-    char headerSize[4];
-    fgets(headerSize,4,f);
-    int headerSizeInt=atoi(headerSize);
-    char header[headerSizeInt];
-    fgets(header,headerSizeInt,f);
-    int tamanhoStruct = tamanhoStructHeader(header);
-    long tam;
-    fseek (f,0,SEEK_END);
-	tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
-    int posicao;
-    posicao=tam +1;
-    fclose(f);
-    int *id;
-    id=(int*)registro;
     if(testeHexa(hex) == 1){
+        fseek(f,23,SEEK_SET);
+        char headerSize[4];
+        fgets(headerSize,4,f);
+        int headerSizeInt=atoi(headerSize);
+        char header[headerSizeInt];
+        fgets(header,headerSizeInt,f);
+        int tamanhoStruct = tamanhoStructHeader(header);
+        //int tamanhoChave = tamanhoChaveHeader(header);
+        id=(int*)registro;
+        if(idUnico(entidade,*id) == 0){
+            printf("o id nao e unico!\n");
+            return;
+        }
+        long tam;
+        fseek (f,0,SEEK_END);
+        tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
+        int posicao;
+        posicao=tam +1;
+        fclose(f);
         FILE *f = fopen(caminho,"ab");
         fseek(f,0,SEEK_END);
         fwrite(registro,tamanhoStruct,1,f);
         fclose(f);
         atualizaIndice(entidade,posicao,*id);
     }else{
-
+        fclose(f);
     }
 }
 
@@ -348,6 +389,30 @@ void atualizaIndice(int entidade,int posicao,int id){
     FILE *fw = fopen(caminho,"wb");
     fwrite(indices,sizeof(Indice),tam+1,fw);
     fclose(fw);
+    /* for(i=0;i<tam+1;i++){
+            printf("[%d]",indices[i].id);
+     }
+     printf("\n");*/
+}
+
+int idUnico(int entidade,int id){
+    char *caminho = caminhoIndices[entidade-1];
+    FILE *f = fopen(caminho,"rb");
+    int tam,i;
+    fseek (f,0,SEEK_END);
+	tam=(int)(ftell(f)/sizeof(Indice));
+	Indice indices[tam];
+	rewind(f);
+	if(tam>0){
+       fread(indices,sizeof(Indice),tam,f);
+    }
+    fclose(f);
+    int j=0;
+    for(i=0;i<tam;i++){
+        if(indices[i].id == id)
+            return 0;
+    }
+    return 1;
 }
 
 int removerEntidade(int entidade){
@@ -356,8 +421,88 @@ int removerEntidade(int entidade){
 }
 
 int lerEntidade(int entidade){
-    printf("Informe o ID da entidade a ser lida: \n");
+    int id;
+    printf("Informe o ID da entidade a ser lida ou 0 para mostrar todas:  \n");
+    scanf("%d",&id);
+    if(id==0){
+        char *caminho = caminhoRegistros[entidade-1];
+        FILE *f = fopen(caminho,"rb");
+        if(f == NULL){
+            printf("erro ao abrir arquivo!\n");
+            return;
+        }
+        char hex[11];
+        fgets(hex,11,f);
+        if(testeHexa(hex) == 1){
+            fseek(f,23,SEEK_SET);
+            char headerSize[4];
+            fgets(headerSize,4,f);
+            int headerSizeInt=atoi(headerSize);
+            char header[headerSizeInt];
+            fgets(header,headerSizeInt,f);
+            int tamanhoStruct = tamanhoStructHeader(header);
+            long tam;
+            fseek (f,0,SEEK_END);
+            tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
+            fseek (f,headerSizeInt-1,SEEK_SET);
+            void *registros = malloc(tamanhoStruct*tam);
+            fread(registros,tamanhoStruct,tam,f);
+            int i;
+            Livro *livro = (Livro*)&registros[1];
+            mostrarLivro(livro);
+        }
+
+    }else{
+            int posicao = buscaID(entidade,id);
+            printf("%d\n",posicao);
+            char *caminho = caminhoRegistros[entidade-1];
+        FILE *f = fopen(caminho,"rb");
+        if(f == NULL){
+            printf("erro ao abrir arquivo!\n");
+            return;
+        }
+        char hex[11];
+        fgets(hex,11,f);
+        if(testeHexa(hex) == 1){
+            fseek(f,23,SEEK_SET);
+            char headerSize[4];
+            fgets(headerSize,4,f);
+            int headerSizeInt=atoi(headerSize);
+            char header[headerSizeInt];
+            fgets(header,headerSizeInt,f);
+            int tamanhoStruct = tamanhoStructHeader(header);
+            long tam;
+            fseek (f,0,SEEK_END);
+            tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
+            fseek (f,headerSizeInt-1,SEEK_SET);
+            void *registros = malloc(tamanhoStruct);
+            fread(registros,tamanhoStruct,1,f);
+            Livro *livro = (Livro*)registros;
+            mostrarLivro(livro);
+        }
+    }
+//    fclose(f);
     return 0;
+}
+
+int buscaID(int entidade,int id){
+    char *caminho = caminhoIndices[entidade-1];
+    FILE *f = fopen(caminho,"rb");
+    int tam,i;
+    fseek (f,0,SEEK_END);
+	tam=(int)(ftell(f)/sizeof(Indice));
+	Indice indices[tam];
+	rewind(f);
+	if(tam>0){
+       fread(indices,sizeof(Indice),tam,f);
+    }
+    fclose(f);
+    int j=0;
+    for(i=0;i<tam;i++){
+        if(indices[i].id == id)
+            return indices[i].posicao;
+    }
+    return -1;
 }
 
 int atualizarEntidade(int entidade){
