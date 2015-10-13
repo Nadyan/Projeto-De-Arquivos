@@ -444,8 +444,10 @@ int removerEntidade(int entidade,int id){
     }
 
     heapsort(indices,tam);
+   Indice *imprimir = &indices[1];
     FILE *fw = fopen(caminho,"wb");
-    fwrite(indices,sizeof(Indice),tam,fw);
+    
+    fwrite(imprimir,sizeof(Indice),tam-1,fw);
     fclose(fw);
     return 0;
 }
