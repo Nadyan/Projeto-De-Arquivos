@@ -451,14 +451,15 @@ int lerEntidade(int entidade){
             fseek (f,0,SEEK_END);
             tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
             fseek (f,headerSizeInt,SEEK_SET);
-            void **registros = (void**)malloc(tamanhoStruct*tam);
+            void *registros =malloc(tamanhoStruct*tam);
             int i;
             for(i=0;i<tam;i++){
-                    fread(registros[i],tamanhoStruct,1,f);
+                    fread(registros,tamanhoStruct,1,f);
+                     mostrarEntidade(entidade,registros,1);
             }
 
             for(i=0;i<tam;i++){
-                    mostrarEntidade(entidade,registros[i],1);
+
             }
             fclose(f);
         }
