@@ -1,0 +1,1 @@
+0xDEADC0DE,header_size=164,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30], tipo=[int,varchar,varchar]

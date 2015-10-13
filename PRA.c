@@ -55,7 +55,11 @@ int lerEntidade(int entidade);
 int atualizarEntidade(int entidade);
 void mostrarLivro(Livro livro);
 void salvarRegistro(int entidade,void *livro);
-void heapsort(int vetor[], int n);
+void heapsort(Indice vetor[], int n);
+void inicializaArquivos();
+int verificaArquivos(int quantidadeDesejada);
+int tamanhoStructHeader(char *header);
+void atualizaIndice(int entidade,int posicao,int id);
 
 int main()
 {
@@ -69,10 +73,28 @@ int main()
    caminhoRegistros[2] = "dados/Autor.txt";
    caminhoRegistros[3] = "dados/AutorLivro.txt";
    int escolha;
+   if(verificaArquivos(4) != 4){
+       inicializaArquivos(1,"0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20], tipo=[int,varchar,varchar,int,varchar]*");
+       inicializaArquivos(2,"0xDEADC0DE,header_size=164,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4], tipo=[int,varchar,varchar,int,int,int]*");
+       inicializaArquivos(3,"0xDEADC0DE,header_size=164,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30], tipo=[int,varchar,varchar]*");
+       inicializaArquivos(4,"0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[6,30,30,11,20], tipo=[int,varchar,varchar,int,varchar]*");
+   }
    do{
     escolha = menuEntidade();
    }while(escolha != 0);
     return 0;
+}
+
+int verificaArquivos(int quantidadeDesejada){
+    int i,arquivos=0;
+    for(i=0;i<quantidadeDesejada;i++){
+        FILE *f = fopen(caminhoRegistros[i],"r");
+        if(f != NULL){
+            arquivos++;
+        }
+        fclose(f);
+    }
+    return arquivos;
 }
 
 int menuEntidade(){
@@ -197,6 +219,7 @@ int adicionarEntidade(int entidade){
             scanf("%d",&leitor.cidade);
             printf("digite o estado do leitor:\n");
             scanf("%d",&leitor.estado);
+            salvarRegistro(entidade,&leitor);
             break;
 
         case 3:
@@ -208,19 +231,36 @@ int adicionarEntidade(int entidade){
             printf("digite o sobrenome do autor:\n");
             fflush(stdin);
             gets(autor.sobrenome);
+            salvarRegistro(entidade,&autor);
             break;
 
         case 4:
             printf("digite o id do autor do livro:\n");
             scanf("%d",&autorLivro.autorID);
             printf("digite o id do livro:\n");
-            fflush(stdin);
-            gets(autorLivro.livroID);
+            scanf("%d",&autorLivro.autorID);
             printf("digite a sequencia do autor do livro:\n");
             scanf("%d",&autorLivro.sequencia);
+            salvarRegistro(entidade,&autorLivro);
             break;
     }
     return 0;
+}
+
+void inicializaArquivos(int entidade,char *header){
+//INICIALIZA OS ARQUIVOS DE REGISTRO
+    FILE *f = fopen(caminhoRegistros[entidade-1],"wb");
+    if(f == NULL){
+        printf("teste\n");
+    }
+    int tamanho=0;
+    while(header[tamanho] != '*'){
+        tamanho++;
+    }
+    fwrite(header,tamanho,1,f);
+    fclose(f);
+    FILE *fi = fopen(caminhoIndices[entidade-1],"wb");
+    fclose(fi);
 }
 
 int testeHexa(char hex[10]){
@@ -232,24 +272,82 @@ int testeHexa(char hex[10]){
     }
 }
 
+int tamanhoStructHeader(char *header){
+
+    header = strstr(header,"tamanho");
+    header = strstr(header,"[");
+    char temp[4] = "";
+    int tamanho =0;
+    int i =1;
+    while( header[i] != ']'){
+        if(header[i] != ','){
+            sprintf(temp,"%s%c",temp,header[i]);
+        }else{
+            tamanho += atoi(temp);
+            strcpy(temp,"");
+        }
+        i++;
+    }
+    return tamanho;
+}
+
 void salvarRegistro(int entidade,void *registro){
     char *caminho = caminhoRegistros[entidade-1];
-    Livro *livro = (Livro*) registro;
-    FILE *f = fopen(caminho,"r");
+    FILE *f = fopen(caminho,"rb");
     if(f == NULL){
         printf("erro ao abrir arquivo!\n");
         return;
     }
     char hex[11];
     fgets(hex,11,f);
-    mostrarLivro(*livro);
-    printf("%s\n",hex);
+    fseek(f,23,SEEK_SET);
+    char headerSize[4];
+    fgets(headerSize,4,f);
+    int headerSizeInt=atoi(headerSize);
+    char header[headerSizeInt];
+    fgets(header,headerSizeInt,f);
+    int tamanhoStruct = tamanhoStructHeader(header);
+    long tam;
+    fseek (f,0,SEEK_END);
+	tam=(ftell(f)-(long)headerSizeInt)/tamanhoStruct;
+    int posicao;
+    posicao=tam +1;
     fclose(f);
+    int *id;
+    id=(int*)registro;
     if(testeHexa(hex) == 1){
-        FILE *f = fopen(caminho,"a");
-        //TODO tetar gravar como tipo byte o tamanhço da estrutura
+        FILE *f = fopen(caminho,"ab");
+        fseek(f,0,SEEK_END);
+        fwrite(registro,tamanhoStruct,1,f);
+        fclose(f);
+        atualizaIndice(entidade,posicao,*id);
+    }else{
 
     }
+}
+
+void atualizaIndice(int entidade,int posicao,int id){
+    char *caminho = caminhoIndices[entidade-1];
+    FILE *f = fopen(caminho,"rb");
+    int tam;
+    printf("posicao:%d\nid:%d\n",posicao,id);
+    fseek (f,0,SEEK_END);
+	tam=(int)(ftell(f)/sizeof(Indice));
+    Indice indices[tam+1];
+    rewind(f);
+    int i;
+    if(tam>0){
+       fread(indices,sizeof(Indice),tam,f);
+    }
+    Indice novo;
+    novo.id=id;
+    novo.posicao=posicao;
+    indices[tam]=novo;
+    heapsort(indices,tam+1);
+    fclose(f);
+    FILE *fw = fopen(caminho,"wb");
+    fwrite(indices,sizeof(Indice),tam+1,fw);
+    fclose(fw);
 }
 
 int removerEntidade(int entidade){
@@ -269,7 +367,7 @@ int atualizarEntidade(int entidade){
      	Autor autor;
     	switch(entidade){
 		//usuario informa o ID a ser atualizado e entao informa os novos atributos,
-		//com isso salva o novo registro com o mesmo ID (???)
+		//o antigo registro é apagado e um novo é criado
 		case 1:
 		    printf("Informe o ID do livro a ser atualizado: \n");
 		    scanf("%d", &livro.id);
@@ -339,9 +437,10 @@ int atualizarEntidade(int entidade){
 	    return 0;
 }
 
-void heapsort(int vetor[], int n){
+void heapsort(Indice vetor[], int n){
 	int pivot;
-	int x, y, aux;
+	int x, y;
+	Indice aux;
 
 	pivot = n/2;
 
@@ -360,10 +459,10 @@ void heapsort(int vetor[], int n){
 		y = pivot*2+1;
 
 		while(y<n){
-			if((y+1 < n)&&(vetor[y+1]>vetor[y])){
+			if((y+1 < n)&&(vetor[y+1].id>vetor[y].id)){
 				y++;
 			}
-			if(vetor[y]>aux){
+			if(vetor[y].id>aux.id){
 				vetor[x]=vetor[y];
 				x=y;
 				y=x*2+1;

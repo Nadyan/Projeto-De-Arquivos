@@ -1,0 +1,1 @@
+0xDEADC0DE,header_size=164,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[6,30,30,11,20], tipo=[int,varchar,varchar,int,varchar]
