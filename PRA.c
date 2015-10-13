@@ -110,10 +110,10 @@ int main()
    caminhoRegistros[3] = "dados/AutorLivro.txt";
    int escolha;
    if(verificaArquivos(4) != 4){
-       inicializaArquivos(1,"0xDEADC0DE,header_size=172,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20], tipo=[int,varchar,varchar,int,varchar],chaves:1*");
-       inicializaArquivos(2,"0xDEADC0DE,header_size=173,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4], tipo=[int,varchar,varchar,int,int,int],chaves:1*");
-       inicializaArquivos(3,"0xDEADC0DE,header_size=136,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30], tipo=[int,varchar,varchar],chaves:1*");
-       inicializaArquivos(4,"0xDEADC0DE,header_size=173,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[6,30,30,11,20], tipo=[int,varchar,varchar,int,varchar],chaves:2*");
+       inicializaArquivos(1,"0xDEADC0DE,header_size=173,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20,], tipo=[int,varchar,varchar,int,varchar],chaves:1*");
+       inicializaArquivos(2,"0xDEADC0DE,header_size=174,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4,], tipo=[int,varchar,varchar,int,int,int],chaves:1*");
+       inicializaArquivos(3,"0xDEADC0DE,header_size=137,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30,], tipo=[int,varchar,varchar],chaves:1*");
+       inicializaArquivos(4,"0xDEADC0DE,header_size=134,entidade=autorLivro,qtd_campos=3,campos=[idlivro;idautor;seq],tamanho=[4,4,4,], tipo=[int,int,int],chaves:2*");
    }
    do{
     escolha = menuEntidade();
@@ -265,7 +265,7 @@ int adicionarEntidade(int entidade){
 
         case 4:
             printf("digite o id do autor do livro:\n");
-            scanf("%d",&autorLivro.autorID);
+            scanf("%d",&autorLivro.livroID);
             printf("digite o id do livro:\n");
             scanf("%d",&autorLivro.autorID);
             printf("digite a sequencia do autor do livro:\n");
@@ -308,7 +308,10 @@ int tamanhoStructHeader(char *header){
     char temp[4] = "";
     int tamanho =0;
     int i =1;
+   // printf("tamanho:%d\n",tamanho);
     while( header[i] != ']'){
+
+     //       printf("temp:%s  header[i]=%c\n",temp,header[i]);
         if(header[i] != ','){
             sprintf(temp,"%s%c",temp,header[i]);
         }else{
@@ -317,6 +320,7 @@ int tamanhoStructHeader(char *header){
         }
         i++;
     }
+   // printf("tamanho:%d\n",tamanho);
     return tamanho;
 }
 
