@@ -1,1 +1,2 @@
-gcc PRA.c PRA.o -o PRA
+pra.o : PRA.c
+	gcc PRA.c pra.o -o pra
