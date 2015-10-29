@@ -1,4 +1,2 @@
-all:PRA
+all:
 	gcc PRA.c PRA.o -o PRA
-METODOS:
-	gcc -c PRA.c
