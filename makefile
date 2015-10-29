@@ -1,2 +1,2 @@
 all : PRA.c
-	gcc PRA.c pra.o -o pra
+	gcc PRA.c -o pra
