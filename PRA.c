@@ -5,6 +5,15 @@
 const char *caminhoIndices[4];
 const char *caminhoRegistros[4];
 
+typedef struct campo{
+    char[30] nome;
+    char[30] tipo;
+}campo;
+
+typedef struct tabela{
+    campo* dados;
+}tabela;
+
 typedef struct {
 	int id;
 	char titulo[30];
@@ -77,6 +86,7 @@ void mostrarAutorDoLivro(AutorDoLivro *autorLivro){
 }
 //DECLARAÇÃO DAS FUNÇÕES
 int menuEntidade();
+void init_database();
 void menuOperacao(int entidade);
 int adicionarEntidade(int entidade);
 int removerEntidade(int entidade,int id);
@@ -119,6 +129,15 @@ int main()
     escolha = menuEntidade();
    }while(escolha != 0);
     return 0;
+}
+
+void init_database(){
+    FILE * conf = fopen("dados/conf.txt","r");
+    if (conf == NULL){
+        printf("erro ao abrir arquivo de configuracao\n");
+    }
+    int qtdTabelas;
+    fread();
 }
 
 int verificaArquivos(int quantidadeDesejada){
@@ -446,7 +465,7 @@ int removerEntidade(int entidade,int id){
     heapsort(indices,tam);
    Indice *imprimir = &indices[1];
     FILE *fw = fopen(caminho,"wb");
-    
+
     fwrite(imprimir,sizeof(Indice),tam-1,fw);
     fclose(fw);
     return 0;
