@@ -1,6 +1,5 @@
-qtd_tabelas:4
-
-{tabela:livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20,], tipo=[int,varchar,varchar,int,varchar]},
+4
+{tabela:livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20,], tipo=[int,varchar,varchar,int,varchar]}
 {tabela:leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4,], tipo=[int,varchar,varchar,int,int,int]}
 {tabela:autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30,], tipo=[int,varchar,varchar]}
 {tabela:autorLivro,qtd_campos=3,campos=[idlivro;idautor;seq],tamanho=[4,4,4,], tipo=[int,int,int]}

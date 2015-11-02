@@ -4,6 +4,8 @@
 //CAMINHOS GLOBAIS
 const char *caminhoIndices[4];
 const char *caminhoRegistros[4];
+tabela *tabelas;
+int qtdTabelas;
 
 typedef struct campo{
     char[30] nome;
@@ -11,6 +13,7 @@ typedef struct campo{
 }campo;
 
 typedef struct tabela{
+    char[30] nome;
     campo* dados;
 }tabela;
 
@@ -87,6 +90,7 @@ void mostrarAutorDoLivro(AutorDoLivro *autorLivro){
 //DECLARAÇÃO DAS FUNÇÕES
 int menuEntidade();
 void init_database();
+void criarTabela(char *linha,int i);
 void menuOperacao(int entidade);
 int adicionarEntidade(int entidade);
 int removerEntidade(int entidade,int id);
@@ -136,8 +140,31 @@ void init_database(){
     if (conf == NULL){
         printf("erro ao abrir arquivo de configuracao\n");
     }
-    int qtdTabelas;
-    fread();
+    fscanf(conf,"%d\n",&qtdTabelas);
+    int i;
+    char *linha;
+    tabelas = (tabela*)malloc(sizeof(tabela)*qtdTabelas);
+    for(i=0;i<qtdTabelas;i++){
+        fgets(linha,999,conf);
+        criarTabela(linha,i);
+    }
+}
+
+void criarTabela(char *linha,int i){
+    tabela auxiliar;
+    int pos = 0;
+    auxiliar.nome = "";
+    while(linha[pos] != '}'){
+        if(linha[pos] == ':'){
+             pos++;
+             while(linha[pos] != ','){
+                sprintf(auxiliar.nome,"%s%c",auxiliar.nome,linha[pos]);
+                pos++;
+             }
+        }
+
+
+    }
 }
 
 int verificaArquivos(int quantidadeDesejada){
