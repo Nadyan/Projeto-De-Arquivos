@@ -9,11 +9,13 @@ int qtdTabelas;
 typedef struct campo{
     char nome[30];
     char tipo[30];
+    int tamanho;
 }campo;
 
 typedef struct tabela{
-    char *nome;
+    char nome[30];
     campo* dados;
+    int quantidadeCampos;
 }tabela;
 
 tabela *tabelas;
@@ -92,6 +94,7 @@ void mostrarAutorDoLivro(AutorDoLivro *autorLivro){
 int menuEntidade();
 void init_database();
 void criarTabela(char *linha,int i);
+void mostrarTabelas();
 void menuOperacao(int entidade);
 int adicionarEntidade(int entidade);
 int removerEntidade(int entidade,int id);
@@ -124,7 +127,7 @@ int main()
    caminhoRegistros[2] = "dados/Autor.txt";
    caminhoRegistros[3] = "dados/AutorLivro.txt";
    int escolha;
-   if(verificaArquivos(4) != 4){
+   /*if(verificaArquivos(4) != 4){
        inicializaArquivos(1,"0xDEADC0DE,header_size=173,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20,], tipo=[int,varchar,varchar,int,varchar],chaves:1*");
        inicializaArquivos(2,"0xDEADC0DE,header_size=174,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4,], tipo=[int,varchar,varchar,int,int,int],chaves:1*");
        inicializaArquivos(3,"0xDEADC0DE,header_size=137,entidade=autor,qtd_campos=3,campos=[id;nome;sobrenome],tamanho=[4,30,30,], tipo=[int,varchar,varchar],chaves:1*");
@@ -132,7 +135,9 @@ int main()
    }
    do{
     escolha = menuEntidade();
-   }while(escolha != 0);
+   }while(escolha != 0);*/
+    init_database();
+    mostrarTabelas();
     return 0;
 }
 
@@ -143,28 +148,112 @@ void init_database(){
     }
     fscanf(conf,"%d\n",&qtdTabelas);
     int i;
-    char *linha;
+    char linha[500];
     tabelas = (tabela*)malloc(sizeof(tabela)*qtdTabelas);
     for(i=0;i<qtdTabelas;i++){
-        fgets(linha,999,conf);
+        fgets(linha,500,conf);
         criarTabela(linha,i);
+        strcpy(linha,"");
     }
 }
 
 void criarTabela(char *linha,int i){
-    tabela auxiliar;
-    int pos = 0;
-    auxiliar.nome = "";
+    int pos = 1;
+    strcpy(tabelas[i].nome,"");
+    char *temp;
+    strcpy(temp,"");
     while(linha[pos] != '}'){
         if(linha[pos] == ':'){
              pos++;
              while(linha[pos] != ','){
-                sprintf(auxiliar.nome,"%s%c",auxiliar.nome,linha[pos]);
+                sprintf(tabelas[i].nome,"%s%c",tabelas[i].nome,linha[pos]);
                 pos++;
              }
         }
+        pos++;
+    }
+    linha = strstr(linha,"qtd_campos=");
+    pos=10;
+    while(linha[pos] != ','){
+        pos++;
+        if(linha[pos] != ','){
+            sprintf(temp,"%s%c",temp,linha[pos]);
+        }else{
+            tabelas[i].quantidadeCampos = atoi(temp);
+            strcpy(temp,"");
+        }
+    }
+    tabelas[i].dados= (campo*)malloc(sizeof(campo)*tabelas[i].quantidadeCampos);
+    int j,k;
+    char *auxiliar;
+    strcpy(temp,"");
+    for(j=0;j<tabelas[i].quantidadeCampos;j++){
+        k=0;
+        auxiliar = strstr(linha,"campos=[");
+        pos = 8;
+        while(k != j){
+            if(auxiliar[pos] == ';'){k++;}
+            pos++;
+        }
+        while(auxiliar[pos] != ';'){
 
+            if(auxiliar[pos] != ';'){
+                sprintf(temp,"%s%c",temp,auxiliar[pos]);
+            }if(auxiliar[pos+1] == ';'){
+                strcpy(tabelas[i].dados[j].nome,temp);
+                strcpy(temp,"");
+            }
+            pos++;
+        }
+        strcpy(temp,"");
+        k=0;
+        auxiliar = strstr(linha,"tamanho=[");
+        pos = 9;
+        while(k != j){
+            if(auxiliar[pos] == ','){k++;}
+            pos++;
+        }
+        while(auxiliar[pos] != ','){
 
+            if(auxiliar[pos] != ','){
+                sprintf(temp,"%s%c",temp,auxiliar[pos]);
+            }if(auxiliar[pos+1] == ','){
+
+                tabelas[i].dados[j].tamanho = atoi(temp);
+                strcpy(temp,"");
+            }
+            pos++;
+        }
+        strcpy(temp,"");
+        k=0;
+        auxiliar = strstr(linha,"tipo=[");
+        pos = 6;
+        while(k != j){
+            if(auxiliar[pos] == ','){k++;}
+            pos++;
+        }
+        while(auxiliar[pos] != ','){
+
+            if(auxiliar[pos] != ','){
+                sprintf(temp,"%s%c",temp,auxiliar[pos]);
+            }if(auxiliar[pos+1] == ','){
+                strcpy(tabelas[i].dados[j].tipo,temp);
+                strcpy(temp,"");
+            }
+            pos++;
+        }
+    }
+}
+
+void mostrarTabelas(){
+    int i,j;
+    printf("-----------------------------------------------------------------------\n");
+    for(i=0;i<qtdTabelas;i++){
+        printf("tabela: %s\n",tabelas[i].nome);
+        for(j=0;j<tabelas[i].quantidadeCampos;j++){
+            printf("%s %s %d\n",tabelas[i].dados[j].tipo,tabelas[i].dados[j].nome,tabelas[i].dados[j].tamanho);
+        }
+        printf("-----------------------------------------------------------------------\n");
     }
 }
 
