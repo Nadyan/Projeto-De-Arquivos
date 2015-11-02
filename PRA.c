@@ -2,8 +2,8 @@
 #include <stdlib.h>
 
 //CAMINHOS GLOBAIS
-const char *caminhoIndices[4];
-const char *caminhoRegistros[4];
+ char caminhoIndices[30][30];
+ char caminhoRegistros[30][30];
 int qtdTabelas;
 
 typedef struct campo{
@@ -107,7 +107,7 @@ void mostrarAutorDoLivro(AutorDoLivro *autorLivro);
 void salvarRegistro(int entidade,void *livro);
 void heapsort(Indice vetor[], int n);
 void inicializaArquivos();
-int verificaArquivos(int quantidadeDesejada);
+int verificaArquivos();
 int tamanhoStructHeader(char *header);
 int tamanhoChaveHeader(char *header);
 void atualizaIndice(int entidade,int posicao,int id);
@@ -117,15 +117,6 @@ void mostrarEntidade(int entidade,void *registros,int tam);
 
 int main()
 {
-   caminhoIndices[0] = "dados/indiceLivro.txt";
-   caminhoIndices[1] = "dados/indiceLeitor.txt";
-   caminhoIndices[2] = "dados/indiceAutor.txt";
-   caminhoIndices[3] = "dados/indiceAutorLivro.txt";
-
-   caminhoRegistros[0] = "dados/Livro.txt";
-   caminhoRegistros[1] = "dados/Leitor.txt";
-   caminhoRegistros[2] = "dados/Autor.txt";
-   caminhoRegistros[3] = "dados/AutorLivro.txt";
    int escolha;
    /*if(verificaArquivos(4) != 4){
        inicializaArquivos(1,"0xDEADC0DE,header_size=173,entidade=livro,qtd_campos=5,campos=[id;titulo;editora;anopublicacao;isbn],tamanho=[4,30,30,4,20,], tipo=[int,varchar,varchar,int,varchar],chaves:1*");
@@ -138,6 +129,7 @@ int main()
    }while(escolha != 0);*/
     init_database();
     mostrarTabelas();
+    verificaArquivos();
     return 0;
 }
 
@@ -155,6 +147,7 @@ void init_database(){
         criarTabela(linha,i);
         strcpy(linha,"");
     }
+
 }
 
 void criarTabela(char *linha,int i){
@@ -257,12 +250,28 @@ void mostrarTabelas(){
     }
 }
 
-int verificaArquivos(int quantidadeDesejada){
+int verificaArquivos(){
     int i,arquivos=0;
-    for(i=0;i<quantidadeDesejada;i++){
-        FILE *f = fopen(caminhoRegistros[i],"r");
+    char aux[200];
+    char aux2[200];
+    for(i=0;i<qtdTabelas;i++){
+        strcpy(caminhoIndices[i],"dados/indice");
+        strcpy(caminhoRegistros[i],"dados/");
+        strcat(caminhoIndices[i],tabelas[i].nome);
+        strcat(caminhoRegistros[i],tabelas[i].nome);
+        strcat(caminhoIndices[i],".txt");
+        strcat(caminhoRegistros[i],".txt");
+    }
+    for(i=0;i<qtdTabelas;i++){
+        FILE *f = fopen(caminhoRegistros[i],"rb");
         if(f != NULL){
             arquivos++;
+        }else{
+            FILE *criar = fopen(caminhoRegistros[i],"wb");
+            FILE *criar2 = fopen(caminhoIndices[i],"wb");
+            /*TODO FAZER A CRIAÇÃO DO HEADER*/
+            fclose(criar);
+            fclose(criar2);
         }
         fclose(f);
     }

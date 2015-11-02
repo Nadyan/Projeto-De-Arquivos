@@ -1,1 +1,0 @@
-0xDEADC0DE,header_size=174,entidade=leitor,qtd_campos=6,campos=[id;nome;fone;endereco;cidade;estado],tamanho=[4,30,30,4,4,4,], tipo=[int,varchar,varchar,int,int,int],chaves:1
