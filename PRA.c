@@ -4,18 +4,19 @@
 //CAMINHOS GLOBAIS
 const char *caminhoIndices[4];
 const char *caminhoRegistros[4];
-tabela *tabelas;
 int qtdTabelas;
 
 typedef struct campo{
-    char[30] nome;
-    char[30] tipo;
+    char nome[30];
+    char tipo[30];
 }campo;
 
 typedef struct tabela{
-    char[30] nome;
+    char *nome;
     campo* dados;
 }tabela;
+
+tabela *tabelas;
 
 typedef struct {
 	int id;
